@@ -1,21 +1,11 @@
 const express = require('express');
 const app = express();
-// const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-// const Sauce = require('./models/Sauce');
 const userRoutes = require('./routes/user.route');
 const path = require('path');
 const stuffRoutes = require('./routes/post.route.js');
-const auth = require('./middleware/auth');
 const formidableMiddleware = require('express-formidable');
-
 require('./models/association');
-// mongoose.connect('mongodb+srv://sopekocko:azerty187@cluster0.lwi0z.mongodb.net/sopekocko_db?retryWrites=true&w=majority', {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true
-//     })
-//     .then(() => console.log('Connexion à MongoDB réussie !'))
-//     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,14 +14,11 @@ app.use((req, res, next) => {
     if (req.method === "OPTIONS") {
         return res.status(200).end();
     }
-
-
     next();
 });
 
 // app.use(auth)
 
-// app.use(bodyParser.json());
 app.use(formidableMiddleware({ multiples: true }));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', userRoutes);

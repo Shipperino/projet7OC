@@ -1,26 +1,14 @@
 const fs = require('fs');
 const sequelize = require('../config/db');
-// const db = require('../config/db');
 const Post = require('../models/post.model');
 const Comment = require('../models/comment.model');
 const User = require('../models/user.model');
 //const formidable = require('formidable');
 
-exports.createPost = async(req, res, next) => {
-    // JSON.parse(req.fields.post);
-    //   post.create()
-    //     .then(() => res.status(201).json({
-    //       message: 'Objet enregistré !'
-    //     }))
-    //     .catch(error => res.status(400).json({
-    //       error
-    //     }));
-    // };
-    //console.log(req.fields)
+exports.createPost = async (req, res, next) => {
     console.log(req.files);
     console.log(req.fields);
     console.log(req.currentUser);
-
     try {
 
         // const form = formidable({ multiples: true });
@@ -29,10 +17,10 @@ exports.createPost = async(req, res, next) => {
         //         console.log("clgfiles", files, fields)
 
         Post.create({
-                ...req.fields.postContent,
-                userId: req.currentUser
-            })
-            .then(async(post) => {
+            ...req.fields.postContent,
+            userId: req.currentUser
+        })
+            .then(async (post) => {
                 const createdPost = await Post.findOne({
                     where: {
                         id: post.id
@@ -41,23 +29,23 @@ exports.createPost = async(req, res, next) => {
                         ['createdAt', 'DESC']
                     ],
                     include: [{
-                            model: Comment,
-                            as: 'comments',
-                            include: [{
-                                model: User,
-                                attributes: ['id', 'username']
-                            }]
-                        },
-                        {
+                        model: Comment,
+                        as: 'comments',
+                        include: [{
                             model: User,
                             attributes: ['id', 'username']
-                        }
+                        }]
+                    },
+                    {
+                        model: User,
+                        attributes: ['id', 'username']
+                    }
                     ]
                 })
                 res.status(201).json({
                     post: createdPost
                 })
-                resolve();
+                // resolve();
             });
         //     });
         // });
@@ -71,11 +59,11 @@ exports.createPost = async(req, res, next) => {
 exports.addComment = (req, res, next) => {
     try {
         Comment.create({
-                comment: req.fields.postComment,
-                userId: req.currentUser,
-                postId: req.fields.postId
-            })
-            .then(async(comment) => {
+            comment: req.fields.postComment,
+            userId: req.currentUser,
+            postId: req.fields.postId
+        })
+            .then(async (comment) => {
 
                 const newComment = await Comment.findOne({
                     where: {
@@ -109,15 +97,15 @@ exports.getPostById = (req, res, next) => {
                 id: postId
             },
             include: [{
-                    model: models.Comment,
-                    as: 'comments',
-                    include: [{
-                        model: models.User,
-                    }]
-                },
-                {
+                model: models.Comment,
+                as: 'comments',
+                include: [{
                     model: models.User,
-                }
+                }]
+            },
+            {
+                model: models.User,
+            }
             ]
         });
         if (post) {
@@ -131,7 +119,7 @@ exports.getPostById = (req, res, next) => {
     }
 }
 
-exports.updatePost = async(req, res) => {
+exports.updatePost = async (req, res) => {
     try {
         const {
             postId
@@ -157,25 +145,57 @@ exports.updatePost = async(req, res) => {
     }
 };
 
-exports.deletePost = async(req, res) => {
-    try {
-        const {
-            postId
-        } = req.params;
-        const deleted = models.Post.destroy({
-            where: {
-                id: postId
-            }
-        });
-        if (deleted) {
-            return res.status(204).send("Post deleted");
+exports.deletePostByID = async (req, res) => {
+    const id = req.params.id;
+    console.log("postToDelete:", req.params);
+    let delPost = await Post.findOne({
+        where: {
+            id: id
         }
-        throw new Error("Post not found");
-    } catch (error) {
-        return res.status(500).send(error);
-    }
+    })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || `Cannot delete Post object with id=${id}!`
+            });
+        });
+    if (delPost) {
+        if (req.currentUserIsAdmin === true || delPost.userId === req.currentUser) {
+            delPost.destroy();
+            res.status(200).json({
+                message: "post supprimé"
+            })
+        }
+        else
+            res.status(400).send('Invalid request');
+    } else
+        res.status(400).send('Invalid request');
 };
-exports.getAllPosts = async(req, res, next) => {
+exports.deleteCommentByID = async (req, res) => {
+    const id = req.params.id;
+    console.log("commentToDelete:", req.params);
+    let delComment = await Comment.findOne({
+        where: {
+            id: id
+        }
+    })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || `Cannot delete Post object with id=${id}!`
+            });
+        });
+    if (delComment) {
+        if (req.currentUserIsAdmin === true || delComment.userId === req.currentUser) {
+            delComment.destroy();
+            res.status(200).json({
+                message: "comment supprimé"
+            })
+        }
+        else
+            res.status(400).send('Invalid request');
+    } else
+        res.status(400).send('Invalid request');
+};
+exports.getAllPosts = async (req, res, next) => {
     const posts = await Post.findAll(
 
         {
@@ -183,26 +203,23 @@ exports.getAllPosts = async(req, res, next) => {
                 ['id', 'DESC']
             ],
             include: [{
-                    model: Comment,
-                    as: 'comments',
-                    include: [{
-                        model: User,
-                        attributes: ['id', 'username']
-
-                    }]
-                },
-
-                {
+                model: Comment,
+                as: 'comments',
+                include: [{
                     model: User,
                     attributes: ['id', 'username']
-                }
+
+                }]
+            },
+
+            {
+                model: User,
+                attributes: ['id', 'username']
+            }
             ]
         }
     )
-    console.log(posts);
     try {
-
-
         return res.status(200).json({
             posts
         });

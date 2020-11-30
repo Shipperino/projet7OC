@@ -17,9 +17,6 @@ import usersposts from "../components/userpost.vue";
 // import { mapState } from "vuex"
 export default {
   name: "secure",
-  data() {
-    return {};
-  },
   computed: {
     ...mapGetters(["posts"]),
   },
@@ -28,10 +25,6 @@ export default {
     axios.get("http://localhost:3000/api/posts").then((resp) => {
       this.$store.dispatch("SETPOSTS", resp.data.posts);
     });
-  },
-  methodThatForcesUpdate() {
-    // ...
-    document.querySelector("usersposts").reload();
   },
 };
 </script>

@@ -10,9 +10,7 @@ const Comment = db.define(
             defaultValue: '',
             allowNull: false
         },
-
     },
-
 );
 
 module.exports = Comment; // true

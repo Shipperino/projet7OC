@@ -2,63 +2,81 @@
   <div class="cardborder">
     <b-card class="w-75 p-3 mb-1 mx-auto mt-4 cardbody">
       <b-media>
-        <h5 class="mt-0 ml-auto">{{ post.title }}</h5>
-        <h6 class="ml-auto text-left">{{ post.user.username }}</h6>
-        <p class="text-left" left>
+        <h4 class="mt-0 ml-auto">{{ post.title }}</h4>
+        
+        <h5 class="mr-auto text-left">
+          Message de: <span class="boldy">{{ post.user.username }}</span>
+        </h5>
+        <p class="text-left postcontent" left>
           {{ post.content }}
         </p>
         <b-button
-          v-b-toggle="'collapse-'+ post.id"
-          variant="primary"
-          class="comentbutton"
-          @click="collapse()"
+          v-b-toggle="'collapse-' + post.id"
+          variant="info"
+          class="commentbutton"
           >Commentaires</b-button
         >
-        <b-collapse class="mt-2" v-bind:id="'collapse-'+ post.id"> 
+        <b-collapse class="mt-2" v-bind:id="'collapse-' + post.id">
           <b-card
-            class="w-50 mx-auto"
+            class="w-75 mx-auto"
             v-for="comment in post.comments"
             :key="comment.id"
           >
-            <h5 class="card-text">{{ comment.user.username }}</h5>
+            <h6 class="card-text" variant="info">
+              {{ comment.user.username }} a répondu :
+            </h6>
             <p class="card-text mt-4" id="comments">
               {{ comment.comment }}
             </p>
+            <b-button
+              variant="danger"
+              
+              :data-id="comment.id"
+              v-if="canDeleteComment"
+              @click="delMyComment($event)"
+              >Supprimer le commentaire</b-button
+            >
           </b-card>
-          <b-container fluid>
-            <b-row class="w-50 mx-auto">
-              <b-col>
-                
-                  <b-form-textarea
-                    v-model="postComment"
-                    class="mx-auto"
-                    id="textarea-small"
-                    placeholder="Répondre à ce commentaire"
-                    no-resize
-                  ></b-form-textarea>
-                  <b-button  variant="primary" @click="postMyComment($event)">Primary</b-button>              
-              </b-col>
+          <b-container class="w-75" fluid>
+            <b-row class="d-flex flex-row mt-1">
+              <b-form-textarea
+                v-model="postComment"
+                class="w-75"
+                placeholder="Répondre à ce commentaire"
+                no-resize
+              ></b-form-textarea>
+              <b-button
+                class="w-25 btnsnd"
+                variant="info"
+                @click="postMyComment($event)"
+                >Envoyer</b-button
+              >
             </b-row>
           </b-container>
         </b-collapse>
       </b-media>
+      <b-button
+          variant="danger"
+          class="deletebutton text-left"
+          v-if="canDelete"
+          @click="delMyPost($event)"
+          >Supprimer le post</b-button
+        >
     </b-card>
   </div>
 </template>
 
 <script>
-import axios from "axios"
+import Vue from "vue";
+import axios from "axios";
 import commentService from "../utils/comment.service";
 export default {
   name: "usersposts",
   props: ["post"],
-  // components: {mypost},
   data() {
     return {
       postComment: "",
     };
-  },
-  computed: {
   },
   methods: {
     getAuthor: function () {
@@ -72,7 +90,7 @@ export default {
       });
     },
     postMyComment(e) {
-       e.preventDefault();
+      e.preventDefault();
       if (this.postComment === "") {
         alert("Vous n'avez rien écris!");
       } else {
@@ -81,42 +99,123 @@ export default {
           .then((resp) => {
             console.log("dd", resp.data.comment);
             this.postComment = "";
-             this.$store.dispatch("ADDCOMMENT", resp.data.comment);
+            this.$store.dispatch("ADDCOMMENT", resp.data.comment);
           });
       }
     },
-    collapse() {
-      this.$root.$emit("v-b-toggle:collapse-1", "collapse-1");
+    delMyPost(e) {
+      console.log("posttodel", this.post.id);
+      axios
+        .delete("http://localhost:3000/api/posts/delete/" + this.post.id)
+        .then((resp) => {
+          console.log(resp);
+        });
+    },
+    delMyComment(e) {
+      console.log("comtodel", e.target.dataset.id);
+      axios
+        .delete(
+          "http://localhost:3000/api/posts/deletecomment/" + e.target.dataset.id
+        )
+        .then((resp) => {
+          console.log(resp);
+        });
+    },
+  },
+  computed: {
+    canDelete() {
+      let userid = localStorage.getItem("userId");
+      let isAdmin = localStorage.getItem("isAdmin");
+      if (isAdmin === "true" || userid === this.post.userId) {
+        return true;
+      } else return false;
+    },
+    canDeleteComment() {
+      let isAdmin = localStorage.getItem("isAdmin");
+      return isAdmin === "true";
     },
   },
 };
 </script>
+
 <style scoped>
+.boldy{
+  font-weight: 600;
+}
+.postcontent {
+  border-bottom: rgb(170, 170, 170) 1px solid;
+  padding-bottom: 10px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.btnsnd {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 1%;
+}
+h4 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  border-bottom: rgb(170, 170, 170) 1px solid;
+  width: 20%;
+  text-align: center;
+  margin: auto;
+}
+
 h5 {
-  font-weight: 900;
+  font-size: 1rem;
+  font-weight: 500;
+  border: rgb(170, 170, 170) 1px solid;
+  padding: 5px 0 5px 0;
+  width: 25%;
+  border-radius: 0.5rem;
+  text-align-last: center;
+  margin-bottom: 30px;
 }
-textarea {
-  width: 75%;
+
+h6 {
+  text-align: left;
 }
+
 #comments {
-  border: cadetblue 1px solid;
+  border: rgb(170, 170, 170) 1px solid;
   border-radius: 0.5rem;
   padding: 0.4rem 0.5rem;
   overflow-wrap: anywhere;
 }
-.comentbutton {
-  margin-right: 80%;
+
+.commentbutton {
+
+  margin-right: 80% ;
+  font-weight: 600;
+  font-size: 1.2rem;
 }
+
 .cardborder {
-  border-bottom: rgb(83, 83, 83) 1px solid;
-  padding-bottom: 30px;
-  width: 85%;
+  border-bottom: rgb(179, 179, 179) 1px solid;
+  padding-bottom: 40px;
+  padding-top: 20px;
+  width: 75%;
   margin: auto;
 }
+
 .cardbody {
   -moz-box-shadow: 0px 0px 4px 1px #656565;
   -webkit-box-shadow: 0px 0px 4px 1px #656565;
   -o-box-shadow: 0px 0px 4px 1px #656565;
   box-shadow: 0px 0px 4px 1px #656565;
+}
+
+@media screen and (max-width: 1000px) {
+  .cardborder {
+    margin: none;
+    width: 100%;
+  }
+  .cardbody {
+    margin: 0px;
+    width: 90% !important;
+    z-index: 9999;
+  }
 }
 </style>

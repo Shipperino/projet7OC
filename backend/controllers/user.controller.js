@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-// const db = require('../config/db');
+
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const User = require('../models/user.model');
@@ -12,7 +12,7 @@ const {
 
 
 
-exports.signup = async(req, res, next) => {
+exports.signup = async (req, res, next) => {
 
     let u = await User.findAll({
         where: {
@@ -30,13 +30,17 @@ exports.signup = async(req, res, next) => {
                 password: bcrypt.hashSync(req.fields.password, 8)
             }).then((user) => {
                 const token = jwt.sign({
-                    userId: user.id
+                    userId: user.id,
+                    isAdmin: user.isAdmin,
                 }, '8d7f44bb-6b21-4bdc-a1f6-e8beb4e9e4eb', {
                     expiresIn: '1h'
                 });
                 res.status(200).json({
                     token: token,
+                    email: user.email,
                     username: user.username,
+                    isAdmin: user.isAdmin,
+                    userId: user.id
                 })
             })
         } catch (error) {
@@ -47,29 +51,9 @@ exports.signup = async(req, res, next) => {
     }
 }
 
+exports.login = async (req, res, next) => {
 
-
-// const token = jwt.sign({
-// id: user.id
-// }, config.secret, {
-// expiresIn: 86400 // expires in 24 hours
-// });
-// res.status(200).send({
-// token: token,
-// username: user.username,
-// email: user.email,
-
-// });
-// });
-// });
-// };
-
-
-exports.login = async(req, res, next) => {
-
-    //  const user = await User.create({ email:'a@a', password:bcrypt.hashSync("lol", 8)})
     console.log(req.fields);
-    //   user.save()
     let u = await User.findAll({
         where: {
 
@@ -83,14 +67,17 @@ exports.login = async(req, res, next) => {
         let passwordHash = user.password;
         if (bcrypt.compareSync(req.fields.password, passwordHash)) {
             const token = jwt.sign({
-                userId: user.id
+                userId: user.id,
+                isAdmin : user.isAdmin,
             }, '8d7f44bb-6b21-4bdc-a1f6-e8beb4e9e4eb', {
                 expiresIn: '1h'
             });
             res.status(200).send({
                 token: token,
                 email: user.email,
-                username: user.username
+                username: user.username,
+                isAdmin: user.isAdmin,
+                userId:user.id
             });
         } else {
             return res.status(401).send('bad')
@@ -103,11 +90,22 @@ exports.login = async(req, res, next) => {
 
     }
 }
-exports.login2 = async(req, res, next) => {
+exports.deleteAcc = async (req, res, next) => {
 
-    res.status(200).send({
-        userId: req.currentUser
-    });
+    let delAcc = await User.findOne({
+            where: {
+                id: req.currentUser
+            }
+        })
+        .catch(error => {
+            console.log(error.message)
+        })
+    if (!delAcc) {
+        console.log("err");
+        res.status(400).send('Invalid request');
 
-
-}
+    } else {
+        delAcc.destroy();
+        res.status(200).json({message : "Utilisateur supprimé"})
+    }
+};

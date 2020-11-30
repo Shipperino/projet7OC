@@ -11,6 +11,7 @@ module.exports = (req, res, next) => {
         const userId = decodedToken.userId;
         if (userId > 0) {
             req.currentUser = userId;
+            req.currentUserIsAdmin = decodedToken.isAdmin;
             console.log("current use : ", userId);
             next();
         } else {
