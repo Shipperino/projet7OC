@@ -9,7 +9,6 @@ router.get('/', auth, stuffCtrl.getAllPosts);
 router.post('/', auth, stuffCtrl.createPost);
 router.post('/comment', auth, stuffCtrl.addComment);
 router.get('/:id', auth, stuffCtrl.getPostById);
-router.put('/:id', auth, stuffCtrl.updatePost);
 router.delete('/delete/:id', auth, stuffCtrl.deletePostByID);
 router.delete('/deletecomment/:id', auth, stuffCtrl.deleteCommentByID);
 module.exports = router;

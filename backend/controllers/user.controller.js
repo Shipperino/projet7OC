@@ -10,8 +10,6 @@ const {
     sequelize
 } = require('../config/db');
 
-
-
 exports.signup = async (req, res, next) => {
 
     let u = await User.findAll({

@@ -1,3 +1,4 @@
+<!-- Page d'accueil sécurisée -->
 <template>
   <div id="secure">
     <Nav />

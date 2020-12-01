@@ -1,3 +1,4 @@
+<!-- Page d'inscription view' -->
 <template>
   <div id="signup">
     <logins />

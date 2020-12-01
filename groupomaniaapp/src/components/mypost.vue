@@ -1,3 +1,4 @@
+ <!--Création de post -->
 <template>
   <div class="mypost">
     <form @submit="postMyMessage($event)" method="post" id="postmsg">
@@ -26,7 +27,6 @@
 
 <script>
 import axios from "axios";
-// import Vue from "vue"
 export default {
   name: "mypost",
   data() {
@@ -38,9 +38,9 @@ export default {
     };
   },
   methods: {
+    // Affiche l'auteur depuis le localstorage
     getAuthor: function () {
       let username = localStorage.getItem("username");
-
       return username;
     },
 

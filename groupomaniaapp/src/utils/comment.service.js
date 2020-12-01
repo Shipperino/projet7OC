@@ -9,7 +9,6 @@ export default new class commentService {
 
             .then((resp) => {
                 console.log("dd", resp.data.comment);
-                // resp.data.comment = "test"
                 return resp
             })
             .catch((error) => {

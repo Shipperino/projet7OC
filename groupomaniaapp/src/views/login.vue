@@ -1,22 +1,33 @@
+<!-- Page de connexion sécurisée -->
 <template>
   <div class="log">
     <logins />
     <h2>Se connecter</h2>
     <form class="login" @submit.prevent="login">
       <label>Adresse mail</label>
-      <input required v-model="email" type="text" placeholder="email" />
+      <b-form-input
+          v-model="email"
+          placeholder="Email"
+          type="email"
+          required
+        ></b-form-input>
       <label>Mot de passe</label>
-      <input
-        required
-        v-model="password"
-        type="password"
-        placeholder="Password"
-      />
-      <button type="submit">Se connecter</button>
+      <b-form-input
+          v-model="password"
+          placeholder="Password"
+          type="password"
+          required
+        ></b-form-input>
+      <b-button class="btnsend" variant="info" type="submit"
+        >Se connecter</b-button
+      >
     </form>
-    <h2>Je ne suis pas inscrit?</h2>
-    <a href="./signup"> <button class="buttonsignup">S'inscrire</button></a>
-    <!-- <button v-on:click="fcttest"> new button</button> -->
+    <h2>Je ne suis pas inscrit ?</h2>
+    <a href="./signup">
+      <b-button class="btnsend" variant="info" type="submit"
+        >S'inscrire</b-button
+      ></a
+    >
   </div>
 </template>
 <script>
@@ -27,8 +38,8 @@ export default {
   components: { logins },
   data() {
     return {
-      email: "c@d",
-      password: "lol",
+      email: "",
+      password: "",
     };
   },
 
@@ -42,15 +53,15 @@ export default {
         .then((resp) => {
           console.log("resp", resp);
           localStorage.setItem("UserToken", resp.data.token);
-            localStorage.setItem("username", resp.data.username);
-            localStorage.setItem("isAdmin", resp.data.isAdmin);
-            localStorage.setItem("userId", resp.data.userId);
+          localStorage.setItem("username", resp.data.username);
+          localStorage.setItem("isAdmin", resp.data.isAdmin);
+          localStorage.setItem("userId", resp.data.userId);
           axios.defaults.headers.common["Authorization"] = resp.data.token;
           this.$router.push("./accueil");
-          
         })
         .catch((err) => {
           console.log("err", err);
+          alert("Utilisateur introuvable");
         });
     },
   },
@@ -58,8 +69,14 @@ export default {
 </script>
 
 <style scoped>
-.log{
-  background-color: #F3F3F3;
+label {
+  font-size: 1.3rem;
+}
+input {
+  margin-bottom: 20px;
+}
+.log {
+  background-color: #f3f3f3;
 }
 h2 {
   border-bottom: black 1px solid;
@@ -73,15 +90,13 @@ h2 {
   display: flex;
   flex-direction: column;
   margin: auto;
-  width: 20%;
+  width: 15%;
   padding-bottom: 30px;
 }
-.buttonsignup {
-  width: 20%;
-  margin-top: 30px;
-}
-button {
-  background-color: #343a40;
-  color: white;
+
+.btnsend {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-top: 10px;
 }
 </style>

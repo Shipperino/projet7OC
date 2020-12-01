@@ -5,5 +5,4 @@ var sequelize = new Sequelize('groupomania', 'root', 'root', {
   dialect: 'mysql'
 });
 
-
 module.exports = sequelize;

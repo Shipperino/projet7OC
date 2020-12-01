@@ -7,14 +7,6 @@ import store from "../store";
 
 Vue.use(Router);
 
-const ifNotAuthenticated = (to, from, next) => {
-  if (!store.getters.isAuthenticated) {
-    next();
-    return;
-  }
-  next();
-};
-
 const ifAuthenticated = (to, from, next) => {
   if (localStorage.getItem('UserToken')!= null) {
     next();
@@ -41,7 +33,6 @@ export default new Router({
       path: "/login",
       name: "login",
       component: login,
-      beforeEnter: ifNotAuthenticated
     },
     {
       path: "/signup",

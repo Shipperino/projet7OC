@@ -3,23 +3,16 @@ const sequelize = require('../config/db');
 const Post = require('../models/post.model');
 const Comment = require('../models/comment.model');
 const User = require('../models/user.model');
-//const formidable = require('formidable');
 
 exports.createPost = async (req, res, next) => {
     console.log(req.files);
     console.log(req.fields);
     console.log(req.currentUser);
     try {
-
-        // const form = formidable({ multiples: true });
-        // await new Promise((resolve, reject) => {
-        //     form.parse(req, (error, fields, files) => {
-        //         console.log("clgfiles", files, fields)
-
         Post.create({
-            ...req.fields.postContent,
-            userId: req.currentUser
-        })
+                ...req.fields.postContent,
+                userId: req.currentUser
+            })
             .then(async (post) => {
                 const createdPost = await Post.findOne({
                     where: {
@@ -29,26 +22,23 @@ exports.createPost = async (req, res, next) => {
                         ['createdAt', 'DESC']
                     ],
                     include: [{
-                        model: Comment,
-                        as: 'comments',
-                        include: [{
+                            model: Comment,
+                            as: 'comments',
+                            include: [{
+                                model: User,
+                                attributes: ['id', 'username']
+                            }]
+                        },
+                        {
                             model: User,
                             attributes: ['id', 'username']
-                        }]
-                    },
-                    {
-                        model: User,
-                        attributes: ['id', 'username']
-                    }
+                        }
                     ]
                 })
                 res.status(201).json({
                     post: createdPost
                 })
-                // resolve();
             });
-        //     });
-        // });
     } catch (error) {
         return res.status(500).json({
             error: error
@@ -59,10 +49,10 @@ exports.createPost = async (req, res, next) => {
 exports.addComment = (req, res, next) => {
     try {
         Comment.create({
-            comment: req.fields.postComment,
-            userId: req.currentUser,
-            postId: req.fields.postId
-        })
+                comment: req.fields.postComment,
+                userId: req.currentUser,
+                postId: req.fields.postId
+            })
             .then(async (comment) => {
 
                 const newComment = await Comment.findOne({
@@ -97,15 +87,15 @@ exports.getPostById = (req, res, next) => {
                 id: postId
             },
             include: [{
-                model: models.Comment,
-                as: 'comments',
-                include: [{
+                    model: models.Comment,
+                    as: 'comments',
+                    include: [{
+                        model: models.User,
+                    }]
+                },
+                {
                     model: models.User,
-                }]
-            },
-            {
-                model: models.User,
-            }
+                }
             ]
         });
         if (post) {
@@ -119,40 +109,14 @@ exports.getPostById = (req, res, next) => {
     }
 }
 
-exports.updatePost = async (req, res) => {
-    try {
-        const {
-            postId
-        } = req.params;
-        const [updated] = models.Post.update(req.fields, {
-            where: {
-                id: postId
-            }
-        });
-        if (updated) {
-            const updatedPost = models.Post.findOne({
-                where: {
-                    id: postId
-                }
-            });
-            return res.status(200).json({
-                post: updatedPost
-            });
-        }
-        throw new Error('Post not found');
-    } catch (error) {
-        return res.status(500).send(error);
-    }
-};
-
 exports.deletePostByID = async (req, res) => {
     const id = req.params.id;
     console.log("postToDelete:", req.params);
     let delPost = await Post.findOne({
-        where: {
-            id: id
-        }
-    })
+            where: {
+                id: id
+            }
+        })
         .catch(err => {
             res.status(500).send({
                 message: err.message || `Cannot delete Post object with id=${id}!`
@@ -164,8 +128,7 @@ exports.deletePostByID = async (req, res) => {
             res.status(200).json({
                 message: "post supprimé"
             })
-        }
-        else
+        } else
             res.status(400).send('Invalid request');
     } else
         res.status(400).send('Invalid request');
@@ -174,10 +137,10 @@ exports.deleteCommentByID = async (req, res) => {
     const id = req.params.id;
     console.log("commentToDelete:", req.params);
     let delComment = await Comment.findOne({
-        where: {
-            id: id
-        }
-    })
+            where: {
+                id: id
+            }
+        })
         .catch(err => {
             res.status(500).send({
                 message: err.message || `Cannot delete Post object with id=${id}!`
@@ -189,8 +152,7 @@ exports.deleteCommentByID = async (req, res) => {
             res.status(200).json({
                 message: "comment supprimé"
             })
-        }
-        else
+        } else
             res.status(400).send('Invalid request');
     } else
         res.status(400).send('Invalid request');
@@ -203,19 +165,18 @@ exports.getAllPosts = async (req, res, next) => {
                 ['id', 'DESC']
             ],
             include: [{
-                model: Comment,
-                as: 'comments',
-                include: [{
+                    model: Comment,
+                    as: 'comments',
+                    include: [{
+                        model: User,
+                        attributes: ['id', 'username']
+                    }]
+                },
+
+                {
                     model: User,
                     attributes: ['id', 'username']
-
-                }]
-            },
-
-            {
-                model: User,
-                attributes: ['id', 'username']
-            }
+                }
             ]
         }
     )

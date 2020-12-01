@@ -1,8 +1,8 @@
 // INTEGRER SEQUALIZED
 const { Sequelize, DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+const db = require("../config/db");
 
-const Post = sequelize.define("post", {
+const Post = db.define("post", {
     // Model attributes are defined here
 
     title: {
@@ -18,6 +18,6 @@ const Post = sequelize.define("post", {
 }, );
 
 // `sequelize.define` also returns the model
-console.log(Post === sequelize.models.Post);
+console.log(Post === db.models.Post);
 
 module.exports = Post; // true

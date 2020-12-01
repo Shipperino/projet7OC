@@ -1,3 +1,4 @@
+ <!-- inscription -->
 <template>
   <div>
     <h2>S'inscrire</h2>
@@ -31,7 +32,9 @@
         />
       </div>
       <div>
-        <button type="submit">S'inscrire</button>
+        <b-button class="btnsend" variant="info" type="submit"
+          >Envoyer</b-button
+        >
       </div>
     </form>
   </div>
@@ -43,16 +46,18 @@ export default {
   name: "RegisterComponent",
   data() {
     return {
-      username: "Coulon Dorian",
-      email: "c@d",
-      password: "lol",
-      password_confirmation: "lol",
+      username: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
     };
   },
   methods: {
+    // Submit inscription + localstorage setup username, token etc
     handleSubmit: function () {
       const { username, email, password } = this;
       console.log({ username, email, password }, "CLD");
+      if (this.password == this.password_confirmation ) {
       axios
         .post("http://localhost:3000/api/auth/signup", {
           username,
@@ -60,17 +65,23 @@ export default {
           password,
         })
         .then((resp) => {
-          console.log("resp", resp);
-          localStorage.setItem("username", username);
+          
+            console.log("resp", resp);
+            localStorage.setItem("username", username);
             localStorage.setItem("UserToken", resp.data.token);
             localStorage.setItem("isAdmin", resp.data.isAdmin);
             localStorage.setItem("userId", resp.data.userId);
-          axios.defaults.headers.common["Authorization"] = resp.data.token;
-          this.$router.push("./accueil");
+            axios.defaults.headers.common["Authorization"] = resp.data.token;
+            this.$router.push("./accueil");
+            alert("Bienvenue sur le site de Groupomania!");          
         })
         .catch((error) => {
           console.error(error);
         });
+    }
+    else {
+      alert('Vos mots de passe ne correspondent pas')
+    }
     },
   },
 };
@@ -88,7 +99,10 @@ h2 {
 label {
   margin-top: 10px;
 }
-button {
+
+.btnsend {
+  font-weight: 700;
+  font-size: 1.2rem;
   margin-top: 20px;
 }
 </style>

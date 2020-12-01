@@ -1,9 +1,11 @@
-<template>
+ <!-- Page de création/suppression de Post et de commentaires-->
+ 
+ <template>
   <div class="cardborder">
     <b-card class="w-75 p-3 mb-1 mx-auto mt-4 cardbody">
       <b-media>
         <h4 class="mt-0 ml-auto">{{ post.title }}</h4>
-        
+
         <h5 class="mr-auto text-left">
           Message de: <span class="boldy">{{ post.user.username }}</span>
         </h5>
@@ -30,7 +32,6 @@
             </p>
             <b-button
               variant="danger"
-              
               :data-id="comment.id"
               v-if="canDeleteComment"
               @click="delMyComment($event)"
@@ -56,12 +57,12 @@
         </b-collapse>
       </b-media>
       <b-button
-          variant="danger"
-          class="deletebutton text-left"
-          v-if="canDelete"
-          @click="delMyPost($event)"
-          >Supprimer le post</b-button
-        >
+        variant="danger"
+        class="deletebutton text-left"
+        v-if="canDelete"
+        @click="delMyPost($event)"
+        >Supprimer le post</b-button
+      >
     </b-card>
   </div>
 </template>
@@ -89,6 +90,8 @@ export default {
         this.postComment = resp.data.comment;
       });
     },
+
+    //Post du commentaire - utilisation du commentservice
     postMyComment(e) {
       e.preventDefault();
       if (this.postComment === "") {
@@ -103,26 +106,36 @@ export default {
           });
       }
     },
+    //Suppression du Post
     delMyPost(e) {
-      console.log("posttodel", this.post.id);
+      console.log("postmodel", this.post.id);
       axios
         .delete("http://localhost:3000/api/posts/delete/" + this.post.id)
         .then((resp) => {
           console.log(resp);
+          this.$store.dispatch("DELPOST", { postId: this.post.id });
         });
     },
+    //Suppression du commentaire
     delMyComment(e) {
-      console.log("comtodel", e.target.dataset.id);
+      console.log("cmtmodel", e.target.dataset.id);
       axios
         .delete(
           "http://localhost:3000/api/posts/deletecomment/" + e.target.dataset.id
         )
         .then((resp) => {
           console.log(resp);
+          let commentToDel = {
+            commentId: e.target.dataset.id,
+            postId: this.post.id,
+          };
+          console.log(commentToDel.commentId);
+          this.$store.dispatch("DELCOMMENT", commentToDel);
         });
     },
   },
   computed: {
+    //Admin check
     canDelete() {
       let userid = localStorage.getItem("userId");
       let isAdmin = localStorage.getItem("isAdmin");
@@ -139,7 +152,7 @@ export default {
 </script>
 
 <style scoped>
-.boldy{
+.boldy {
   font-weight: 600;
 }
 .postcontent {
@@ -157,8 +170,6 @@ export default {
 h4 {
   font-size: 1.6rem;
   font-weight: 700;
-  border-bottom: rgb(170, 170, 170) 1px solid;
-  width: 20%;
   text-align: center;
   margin: auto;
 }
@@ -186,8 +197,7 @@ h6 {
 }
 
 .commentbutton {
-
-  margin-right: 80% ;
+  margin-right: 80%;
   font-weight: 600;
   font-size: 1.2rem;
 }

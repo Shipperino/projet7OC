@@ -1,14 +1,9 @@
-## Piquante
+## Groupomania
 
-Le projet a été généré avec [Angular CLI](https://github.com/angular/angular-cli) version 7.0.2.
+Pour lancer le serveur, veillez taper nodemon server ou node server.
+Pour lancer l'application, taper npm run serve et dirigez vous dans votre navigateur à l'adresse indiquée dans le terminal
 
-Pour faire fonctionner le projet, vous devez installer node-sass à part.
-
-## Development server
-
-Démarrer `ng serve` pour avoir accès au serveur de développement. Rendez-vous sur `http://localhost:4200/`. L'application va se recharger automatiquement si vous modifiez un fichier source.
 
 Nodemon installé 
 Node-sass 
 express
-mongoose

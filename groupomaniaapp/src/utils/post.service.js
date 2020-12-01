@@ -1,4 +1,6 @@
 import axios from "axios"
+
+// Code à intégrer pour une meilleure lisibilité / maintenance
 export class postService {
     getPosts() {
         axios.get("http://localhost:3000/api/posts").then((resp) => {

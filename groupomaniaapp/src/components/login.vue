@@ -1,13 +1,18 @@
+ <!-- Connexion -->
 <template>
   <div>
     <b-navbar toggleable="lg" type="dark">
-      <b-navbar-brand href="./accueil">Groupomania</b-navbar-brand>
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-navbar-brand>Groupomania</b-navbar-brand>
+       <b-navbar-nav class="ml-auto">
+        <b-nav-item class="log" href="/login">Se connecter</b-nav-item>
+        <b-nav-item class="sub" href="/signup">S'inscrire</b-nav-item>
+      </b-navbar-nav>
     </b-navbar>
   </div>
 </template>
 
 <script>
+//Navbar Login page
 export default {
   name: "logins",
 };
@@ -39,5 +44,21 @@ h2 {
 button {
   background-color: #343a40;
   color: white;
+}
+.log,.sub{
+  color: white  ;
+  font-size: 1.3rem;
+  opacity: 1;
+  z-index: 9999;
+}
+.sub{
+  padding-left: 1em;
+}
+.log{
+  border-right: white 1px solid;
+  padding-right: 1em;
+}
+a{
+  color: white !important;
 }
 </style>
