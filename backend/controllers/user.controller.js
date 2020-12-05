@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const User = require('../models/user.model');
@@ -14,7 +13,7 @@ exports.signup = async (req, res, next) => {
 
     let u = await User.findAll({
         where: {
-            email: req.fields.email,
+            email: req.body.email,    
         }
     })
     console.log("u", u)
@@ -23,9 +22,9 @@ exports.signup = async (req, res, next) => {
     } else {
         try {
             User.create({
-                email: req.fields.email,
-                username: req.fields.username,
-                password: bcrypt.hashSync(req.fields.password, 8)
+                email: req.body.email,
+                username: req.body.username,
+                password: bcrypt.hashSync(req.body.password, 8)
             }).then((user) => {
                 const token = jwt.sign({
                     userId: user.id,
@@ -51,11 +50,11 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
 
-    console.log(req.fields);
+    console.log(req.body);
     let u = await User.findAll({
         where: {
 
-            email: req.fields.email,
+            email: req.body.email,
         }
     })
     console.log("u", u)
@@ -63,7 +62,7 @@ exports.login = async (req, res, next) => {
     if (u.length > 0) {
         let user = u[0];
         let passwordHash = user.password;
-        if (bcrypt.compareSync(req.fields.password, passwordHash)) {
+        if (bcrypt.compareSync(req.body.password, passwordHash)) {
             const token = jwt.sign({
                 userId: user.id,
                 isAdmin : user.isAdmin,

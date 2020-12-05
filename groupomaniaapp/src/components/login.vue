@@ -1,7 +1,7 @@
  <!-- Connexion -->
 <template>
   <div>
-    <b-navbar toggleable="lg" type="dark">
+    <b-navbar toggleable="lg">
       <b-navbar-brand>Groupomania</b-navbar-brand>
        <b-navbar-nav class="ml-auto">
         <b-nav-item class="log" href="/login">Se connecter</b-nav-item>
@@ -20,8 +20,7 @@ export default {
 
 <style scoped>
 .navbar {
-  background-color: rgb(61, 61, 61);
-}
+  background-color: #1A2C4B}
 h2 {
   border-bottom: black 1px solid;
   width: 35%;

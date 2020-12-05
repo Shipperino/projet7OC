@@ -14,6 +14,10 @@ const Post = db.define("post", {
         type: DataTypes.STRING,
         defaultValue: ''
 
+    },
+    image:{
+        type: DataTypes.STRING,
+        defaultValue: null
     }
 }, );
 

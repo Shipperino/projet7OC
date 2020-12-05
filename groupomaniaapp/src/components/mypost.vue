@@ -3,7 +3,7 @@
   <div class="mypost">
     <form @submit="postMyMessage($event)" method="post" id="postmsg">
       <h2>Bonjour, {{ getAuthor() }}</h2>
-      <b-form-group class="mb-1" id="input-group-1" label-for="input-1">
+      <b-form-group class="mb-0" id="input-group-1" label-for="input-1">
         <b-form-input
           v-model="postContent.title"
           placeholder="Mettez un titre à votre post ! :)"
@@ -17,10 +17,12 @@
           placeholder="Qu'avez-vous à nous partager?"
           no-resize
         ></b-form-textarea>
+       
         <b-button class="btnsend" variant="info" type="submit"
           >Envoyer</b-button
         >
-      </div>
+      </div>     
+       <b-form-file v-model="postContent.image" class="postimg" style="content:'choisir'"  placeholder="Choisissez une image"></b-form-file>
     </form>
   </div>
 </template>
@@ -34,6 +36,7 @@ export default {
       postContent: {
         title: "",
         content: "",
+        image: null,
       },
     };
   },
@@ -44,49 +47,81 @@ export default {
       return username;
     },
 
-    mounted() {
-      axios.get("http://localhost:3000/api/posts").then((resp) => {
-        this.postList = resp.data.posts;
-      });
-    },
     postMyMessage(e) {
-      console.log("postMyMessage", this.postContent);
+      e.preventDefault();
+      const fd = new FormData();
+      if (this.postContent.image !== null) {
+        fd.append("image", this.postContent.image, this.postContent.image.name);
+      }
+      fd.set("content", this.postContent.content);
+      fd.set("title", this.postContent.title);
+      console.log(fd.get("title"));
+      console.log(fd.get("image"));
+      console.log(fd.get("content"));
+      const config = { headers: { "Content-Type": "multipart/form-data" } };
       axios
-        .post("http://localhost:3000/api/posts", {
-          postContent: this.postContent,
-        })
+        .post("http://localhost:3000/api/posts/", fd, config)
 
         .then((resp) => {
           console.log("dds", resp.data.post);
           this.postContent = {
             title: "",
             content: "",
+            image: null,
           };
           this.$store.dispatch("ADDPOST", resp.data.post);
         })
         .catch((error) => {
           console.error(error);
+          alert("Veuillez insérer un titre, un post et une image !")
         });
-      e.preventDefault();
     },
   },
 };
 </script>
 
 <style scoped>
+.custom-file-input ~ .custom-file-label::after {
+  content: "Choisir...";
+}
+.btnsendimg {
+  background: #1a2c4b;
+}
 h2 {
   margin: 0;
   padding: 7px 0 7px 0;
-  background: #3d3d3d;
+  background-color: #1a2c4b;
   color: white;
   font-style: italic;
 }
+/* .custom-file-input ~ .custom-file-label[data-browse]::after {
+  content: "fefe"  !important;
+  z-index: 9999;
+
+}
+.custom-file-label{
+  cursor: pointer;
+  content: "dddd";
+}
+.custom-file-input:lang(en) ~ .custom-file-label::after {
+  content: 'dsds'  !important;
+}
+  */
 #postmsg {
   padding-bottom: 0;
 }
+.postimg {
+  width: 40%;
+  flex-direction: column;
+  text-align: left;
+}
+label {
+  height: 100px;
+  cursor: pointer;
+}
 .mypost {
   background-color: #eeeeee;
-  width: 45%;
+  width: 57%;
   text-align: center;
   margin: auto;
   margin-top: 150px;
@@ -115,6 +150,10 @@ input[placeholder] {
 .btnsend {
   font-weight: 700;
   font-size: 1.2rem;
+  background-color: #d1515a;
+}
+.btnsend:hover {
+  background-color: #d1515a;
 }
 @media screen and (max-width: 1000px) {
   .mypost {

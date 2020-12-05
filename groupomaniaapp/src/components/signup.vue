@@ -104,5 +104,12 @@ label {
   font-weight: 700;
   font-size: 1.2rem;
   margin-top: 20px;
+  background-color: #1A2C4B;
+  opacity: 0.9;
+}
+
+.btnsend:hover{
+  background-color: #1A2C4B;
+  opacity: 1
 }
 </style>

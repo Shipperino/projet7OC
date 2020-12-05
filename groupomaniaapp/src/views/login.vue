@@ -98,5 +98,12 @@ h2 {
   font-weight: 700;
   font-size: 1.2rem;
   margin-top: 10px;
+  background-color: #1A2C4B;
+  border-color: #1A2C4B;
+  transition: 200ms;
 }
+.btnsend:hover {
+  background-color: #1A2C4B;
+  transform: scale(1.1);
+  transition: 200ms;}
 </style>

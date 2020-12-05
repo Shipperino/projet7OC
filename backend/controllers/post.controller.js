@@ -3,15 +3,17 @@ const sequelize = require('../config/db');
 const Post = require('../models/post.model');
 const Comment = require('../models/comment.model');
 const User = require('../models/user.model');
+const body = require('body-parser')
+
 
 exports.createPost = async (req, res, next) => {
-    console.log(req.files);
-    console.log(req.fields);
-    console.log(req.currentUser);
+
     try {
         Post.create({
-                ...req.fields.postContent,
-                userId: req.currentUser
+                title: req.body.title,
+                content: req.body.content,
+                userId: req.currentUser,
+                image: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
             })
             .then(async (post) => {
                 const createdPost = await Post.findOne({
@@ -49,9 +51,9 @@ exports.createPost = async (req, res, next) => {
 exports.addComment = (req, res, next) => {
     try {
         Comment.create({
-                comment: req.fields.postComment,
+                comment: req.body.postComment,
                 userId: req.currentUser,
-                postId: req.fields.postId
+                postId: req.body.postId
             })
             .then(async (comment) => {
 

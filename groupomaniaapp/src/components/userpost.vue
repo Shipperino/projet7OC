@@ -5,10 +5,10 @@
     <b-card class="w-75 p-3 mb-1 mx-auto mt-4 cardbody">
       <b-media>
         <h4 class="mt-0 ml-auto">{{ post.title }}</h4>
-
         <h5 class="mr-auto text-left">
           Message de: <span class="boldy">{{ post.user.username }}</span>
         </h5>
+          <b-card :img-src="post.image" ></b-card>
         <p class="text-left postcontent" left>
           {{ post.content }}
         </p>
@@ -139,19 +139,25 @@ export default {
     canDelete() {
       let userid = localStorage.getItem("userId");
       let isAdmin = localStorage.getItem("isAdmin");
-      if (isAdmin === "true" || userid === this.post.userId) {
+      if (isAdmin === "true" || userid == this.post.userId) {
         return true;
       } else return false;
     },
     canDeleteComment() {
       let isAdmin = localStorage.getItem("isAdmin");
-      return isAdmin === "true";
+      let userid = localStorage.getItem("userId");
+      if (isAdmin === "true" || userid == this.post.userId) {
+        return true;
+      } else return false;
     },
   },
 };
 </script>
 
 <style scoped>
+.custom-file-label{
+  height: 100px;
+}
 .boldy {
   font-weight: 600;
 }
@@ -166,6 +172,7 @@ export default {
   font-size: 1.2rem;
   font-weight: 600;
   padding: 1%;
+   background-color: #D1515A;
 }
 h4 {
   font-size: 1.6rem;
@@ -194,12 +201,17 @@ h6 {
   border-radius: 0.5rem;
   padding: 0.4rem 0.5rem;
   overflow-wrap: anywhere;
+  font-weight: 700;
 }
 
 .commentbutton {
   margin-right: 80%;
   font-weight: 600;
   font-size: 1.2rem;
+   background-color: #1A2C4B
+}
+.commentbutton:hover, .commentbutton:focus{
+  background-color: #1A2C4B
 }
 
 .cardborder {

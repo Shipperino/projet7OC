@@ -2,8 +2,13 @@ const express = require('express');
 const app = express();
 const userRoutes = require('./routes/user.route');
 const postRoutes = require('./routes/post.route.js');
-const formidableMiddleware = require('express-formidable');
+const bodyParser = require('body-parser');
+// const formidableMiddleware = require('express-formidable');
 require('./models/association');
+const path = require('path');
+
+
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,7 +20,17 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(formidableMiddleware({ multiples: true }));
+// app.post("/img", (req, res)=> {
+//     upload(req, res, (err) => {
+//         console.log('err', err)
+//         console.log('req', req.body)
+//     })
+// })
+
+
+app.use(bodyParser.json());
+app.use('/images', express.static(path.join(__dirname, 'images')));
+// app.use(formidableMiddleware({ multiples: true }));
 app.use('/api/auth', userRoutes);
 app.use('/api/posts', postRoutes);
 
